@@ -35,9 +35,18 @@ if File.exist? "event_attendees.csv"
         header_converters: :symbol
     )
 
+    template_letter = File.read('thanks_letter.html')
+
     contents.each do |row|
         zipcode = clean_zipcode(row[:zipcode])
-        puts "#{row[:first_name]} - #{zipcode} - #{legisplators_by_zipcode(zipcode)}"
+        name = row[:first_name]
+        legislators = legisplators_by_zipcode(zipcode)
+        puts "#{name} - #{zipcode} - #{legislators}"
+
+        personal_letter = template_letter.gsub('FIRST_NAME', name)
+        personal_letter.gsub!('LEGISLATORS', legislators)
+
+        puts personal_letter
     end
 else puts "File is not found"
 end
