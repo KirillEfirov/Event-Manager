@@ -27,11 +27,17 @@ if File.exist? "event_attendees.csv"
                 roles: ['legislatorUpperBody', 'legislatorLowerBody']
             )
             legislators = legislators.officials
+
+            legislators_names = legislators.map do |legislator|
+                    legislator.name
+            end
         rescue
             'You can find your representatives by visiting www.commoncause.org/take-action/find-elected-officials'
         end
+
+        legislators_names = ["Not found"] if legislators_names.nil?
         
-        puts "#{name} #{zipcode} #{legislators}"
+        puts "#{name} #{zipcode} #{legislators_names.join()}"
     end
 else puts "File is not found"
 end
