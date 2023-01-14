@@ -85,7 +85,6 @@ if File.exist? "event_attendees.csv"
         end
 
         reg_dates.push(row[:regdate])
-        #home_phone = clean_homePhone(row[:homePhone])
         phones.push(row[:homephone])
     end
 
