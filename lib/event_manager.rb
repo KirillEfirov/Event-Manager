@@ -33,6 +33,26 @@ def busy_hours(reg_dates)
     frequent_hour
 end
 
+def clean_homePhone(phones)
+    phones.map! do |phone|
+        charachters = phone.split("")
+
+        charachters.map! { |charach| charach if charach.ord >=48 && charach.ord <= 57 }.compact!
+
+        #charachters.join("")
+
+        if charachters.length == 11 && charachters[0] == 1
+            charachters.shift
+            charachters.join("")
+        elsif charachters.length < 10 || charachters.length > 10
+            "Bad number"
+        else
+            charachters.join("")
+        end
+    end
+
+end
+
 if File.exist? "event_attendees.csv"
     contents = CSV.open(
         "event_attendees.csv", 
@@ -41,6 +61,7 @@ if File.exist? "event_attendees.csv"
     )
 
     reg_dates = Array.new
+    phones = Array.new
 
     template_letter = File.read('form_letter.erb')
     erb_template = ERB.new template_letter
@@ -51,7 +72,7 @@ if File.exist? "event_attendees.csv"
         name = row[:first_name]
         legislators = legisplators_by_zipcode(zipcode)
 
-        puts "#{name} - #{zipcode} - #{legislators}"
+        #puts "#{name} - #{zipcode} - #{legislators}"
 
         form_letter = erb_template.result(binding)
         puts form_letter
@@ -64,10 +85,13 @@ if File.exist? "event_attendees.csv"
         end
 
         reg_dates.push(row[:regdate])
+        #home_phone = clean_homePhone(row[:homePhone])
+        phones.push(row[:homephone])
     end
 
     puts busy_hours(reg_dates)
-
+    clean_phones = clean_homePhone(phones)
+    puts clean_phones
 
 
 else puts "File is not found"
