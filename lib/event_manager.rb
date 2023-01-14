@@ -22,12 +22,25 @@ def legisplators_by_zipcode(zipcode)
     end
 end
 
+def busy_hours(reg_dates) 
+    hours = reg_dates.map { |date| date.split(" ")[1].split(":")[0] }
+
+    frequent_hour = Hash.new
+    (00..23).each { |hour| frequent_hour["#{hour} hour(s)"] = hours.count(hour.to_s) }
+
+    frequent_hour.delete_if { |key, value| value == 0}
+
+    frequent_hour
+end
+
 if File.exist? "event_attendees.csv"
     contents = CSV.open(
         "event_attendees.csv", 
         headers: true, 
         header_converters: :symbol
     )
+
+    reg_dates = Array.new
 
     template_letter = File.read('form_letter.erb')
     erb_template = ERB.new template_letter
@@ -37,19 +50,26 @@ if File.exist? "event_attendees.csv"
         zipcode = clean_zipcode(row[:zipcode])
         name = row[:first_name]
         legislators = legisplators_by_zipcode(zipcode)
+
         puts "#{name} - #{zipcode} - #{legislators}"
 
         form_letter = erb_template.result(binding)
         puts form_letter
 
         Dir.mkdir('output') unless Dir.exist?('output')
-
         filename = "output/thanks_#{id}.html"
 
         File.open(filename, 'w') do |file|
             file.puts form_letter
         end
+
+        reg_dates.push(row[:regdate])
     end
+
+    puts busy_hours(reg_dates)
+
+
+
 else puts "File is not found"
 end
 
