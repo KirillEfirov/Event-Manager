@@ -52,13 +52,16 @@ def clean_homePhone(phones)
 end
 
 def busy_days(reg_dates)
-    frequent_day = Array.new
+    days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    all_days = Array.new
 
     reg_dates.each do |date|
         day = DateTime.strptime(date,"%m/%d/%y %H:%M").strftime("%A")
-        frequent_day.push(day)
+        all_days.push(day)
     end
 
+    frequent_day = Hash.new
+    days_of_week.each { |day| frequent_day[day] = all_days.count(day) }
     frequent_day
 end
 
