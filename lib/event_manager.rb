@@ -1,3 +1,4 @@
+require "date"
 require "csv"
 require 'google/apis/civicinfo_v2'
 require "erb"
@@ -38,9 +39,7 @@ def clean_homePhone(phones)
         charachters = phone.split("")
 
         charachters.map! { |charach| charach if charach.ord >=48 && charach.ord <= 57 }.compact!
-
-        #charachters.join("")
-
+        
         if charachters.length == 11 && charachters[0] == 1
             charachters.shift
             charachters.join("")
@@ -50,7 +49,17 @@ def clean_homePhone(phones)
             charachters.join("")
         end
     end
+end
 
+def busy_days(reg_dates)
+    frequent_day = Array.new
+
+    reg_dates.each do |date|
+        day = DateTime.strptime(date,"%m/%d/%y %H:%M").strftime("%A")
+        frequent_day.push(day)
+    end
+
+    frequent_day
 end
 
 if File.exist? "event_attendees.csv"
@@ -89,8 +98,9 @@ if File.exist? "event_attendees.csv"
     end
 
     puts busy_hours(reg_dates)
-    clean_phones = clean_homePhone(phones)
-    puts clean_phones
+    puts clean_homePhone(phones)
+    puts busy_days(reg_dates)
+    
 
 
 else puts "File is not found"
